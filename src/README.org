@@ -1,0 +1,5 @@
+* purescript-language-corefn
+Opinionated type definitions and serialization/deserialization for the PureScript CoreFn
+representation in PureScript. This library is opinionated as in it doesn't provide a 1-to-1 mapping
+of types from the canonical implementation; for example, tuples are replaced with records to provide
+better metadata and reduce the size of the representation.

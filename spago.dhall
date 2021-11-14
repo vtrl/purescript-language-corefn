@@ -1,8 +1,10 @@
 { name = "language-purescript-corefn"
 , dependencies =
-  [ "console"
+  [ "argonaut-core"
+  , "console"
   , "effect"
   , "either"
+  , "foreign-object"
   , "maybe"
   , "newtype"
   , "prelude"

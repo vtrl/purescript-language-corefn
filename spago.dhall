@@ -4,27 +4,20 @@
   , "argonaut-core"
   , "arrays"
   , "bifunctors"
-  , "console"
-  , "control"
-  , "debug"
-  , "effect"
   , "either"
   , "foldable-traversable"
   , "foreign-object"
   , "integers"
   , "maybe"
   , "newtype"
-  , "node-buffer"
-  , "node-fs"
   , "ordered-collections"
   , "prelude"
   , "psci-support"
   , "safe-coerce"
   , "strings"
   , "tuples"
-  , "unsafe-coerce"
   , "versions"
   ]
 , packages = ./packages.dhall
-, sources = [ "src/**/*.purs", "test/**/*.purs" ]
+, sources = [ "src/**/*.purs" ]
 }

@@ -1,0 +1,51 @@
+lockfileVersion: 5.3
+
+specifiers:
+  json-diff: ^0.5.4
+
+dependencies:
+  json-diff: 0.5.4
+
+packages:
+
+  /cli-color/0.1.7:
+    resolution: {integrity: sha1-rcMgD6RxzCEbDaf1ZrcemLnWc0c=}
+    engines: {node: '>=0.1.103'}
+    dependencies:
+      es5-ext: 0.8.2
+    dev: false
+
+  /difflib/0.2.4:
+    resolution: {integrity: sha1-teMDYabbAjF21WKJLbhZQKcY9H4=}
+    dependencies:
+      heap: 0.2.6
+    dev: false
+
+  /dreamopt/0.6.0:
+    resolution: {integrity: sha1-2BPM2sjTnYrVJndVFKE92mZNa0s=}
+    engines: {node: '>=0.4.0'}
+    dependencies:
+      wordwrap: 1.0.0
+    dev: false
+
+  /es5-ext/0.8.2:
+    resolution: {integrity: sha1-q6jZ4ZQ6iVrJaDemKjmz9V7NlKs=}
+    engines: {node: '>=0.4'}
+    dev: false
+
+  /heap/0.2.6:
+    resolution: {integrity: sha1-CH4fELBGky/IWU3Z5tN4r8nR5aw=}
+    dev: false
+
+  /json-diff/0.5.4:
+    resolution: {integrity: sha512-q5Xmx9QXNOzOzIlMoYtLrLiu4Jl/Ce2bn0CNcv54PhyH89CI4GWlGVDye8ei2Ijt9R3U+vsWPsXpLUNob8bs8Q==}
+    hasBin: true
+    dependencies:
+      cli-color: 0.1.7
+      difflib: 0.2.4
+      dreamopt: 0.6.0
+    dev: false
+
+  /wordwrap/1.0.0:
+    resolution: {integrity: sha1-J1hIEIkUVqQXHI0CJkQa3pDLyus=}
+    dev: false

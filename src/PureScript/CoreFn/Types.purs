@@ -2,7 +2,6 @@ module PureScript.CoreFn.Types where
 
 import Prelude
 
-import Data.Array as Array
 import Data.Either (Either)
 import Data.Maybe (Maybe)
 import Data.Newtype (class Newtype)
@@ -59,16 +58,3 @@ newtype Proper = Proper String
 derive instance Newtype Proper _
 derive newtype instance Eq Proper
 derive newtype instance Ord Proper
-
-newtype Version = Version
-  { branch ∷ Array Int
-  , tags ∷ Array String
-  }
-
-derive instance Newtype Version _
-derive newtype instance Eq Version
-derive newtype instance Ord Version
-
-showVersion ∷ Version → String
-showVersion (Version { branch, tags }) =
-  Array.intercalate "." (show <$> branch) <> "-" <> Array.intercalate "-" tags

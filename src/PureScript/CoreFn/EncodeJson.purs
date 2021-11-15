@@ -19,6 +19,7 @@ import Data.Tuple.Nested ((/\))
 import Data.String.CodeUnits as SCU
 import Data.String.Common (split)
 import Data.String.Pattern (Pattern(..))
+import Data.Version.Haskell (Version, showVersion)
 import Foreign.Object (Object, fromHomogeneous, insert, singleton)
 import PureScript.CoreFn.Ann (Ann(..))
 import PureScript.CoreFn.Binder (Binder(..))
@@ -34,8 +35,6 @@ import PureScript.CoreFn.Types
   , Qualified(..)
   , SourcePos(..)
   , SourceSpan
-  , Version
-  , showVersion
   )
 
 constructorTypeToJson ∷ ConstructorType → Json

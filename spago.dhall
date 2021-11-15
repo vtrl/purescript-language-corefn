@@ -1,7 +1,6 @@
 { name = "language-purescript-corefn"
 , dependencies =
   [ "argonaut-core"
-  , "arrays"
   , "bifunctors"
   , "console"
   , "effect"
@@ -15,6 +14,7 @@
   , "psci-support"
   , "strings"
   , "tuples"
+  , "versions"
   ]
 , packages = ./packages.dhall
 , sources = [ "src/**/*.purs", "test/**/*.purs" ]

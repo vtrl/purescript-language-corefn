@@ -159,48 +159,40 @@ exprFromJson ∷ FilePath → Json → Either JsonDecodeError (Expr Ann)
 exprFromJson modulePath e = do
   o ← decodeJson e
   exprType ← o .: "type"
+  a ← o .: "annotation" >>= annFromJson modulePath
   case exprType of
     "Var" → do
-      a ← o .: "annotation" >>= annFromJson modulePath
       q ← o .: "value" >>= qualifiedFromJson Ident
       pure $ Var a q
     "Literal" → do
-      a ← o .: "annotation" >>= annFromJson modulePath
       l ← o .: "value" >>= literalFromJson (exprFromJson modulePath)
       pure $ Literal a l
     "Constructor" → do
-      a ← o .: "annotation" >>= annFromJson modulePath
       t ← o .: "typeName" >>= properFromJson
       c ← o .: "constructorName" >>= properFromJson
       i ← o .: "fieldNames" >>= traverse identFromJson
       pure $ Constructor a t c i
     "Accessor" → do
-      a ← o .: "annotation" >>= annFromJson modulePath
       f ← o .: "fieldName"
       n ← o .: "expression" >>= exprFromJson modulePath
       pure $ Accessor a f n
     "ObjectUpdate" → do
-      a ← o .: "annotation" >>= annFromJson modulePath
       r ← o .: "expression" >>= exprFromJson modulePath
       u ← o .: "updates" >>= traverse (exprFromJson modulePath)
       pure $ ObjectUpdate a r u
     "Abs" → do
-      a ← o .: "annotation" >>= annFromJson modulePath
       i ← o .: "argument" >>= identFromJson
       b ← o .: "body" >>= exprFromJson modulePath
       pure $ Abs a i b
     "App" → do
-      a ← o .: "annotation" >>= annFromJson modulePath
       f ← o .: "abstraction" >>= exprFromJson modulePath
       x ← o .: "argument" >>= exprFromJson modulePath
       pure $ App a f x
     "Case" → do
-      a ← o .: "annotation" >>= annFromJson modulePath
       c ← o .: "caseExpressions" >>= traverse (exprFromJson modulePath)
       t ← o .: "caseAlternatives" >>= traverse (caseAlternativeFromJson modulePath)
       pure $ Case a c t
     "Let" → do
-      a ← o .: "annotation" >>= annFromJson modulePath
       b ← o .: "binds" >>= traverse (bindFromJson modulePath)
       r ← o .: "expression" >>= exprFromJson modulePath
       pure $ Let a b r
@@ -245,26 +237,22 @@ binderFromJson ∷ FilePath → Json → Either JsonDecodeError (Binder Ann)
 binderFromJson modulePath b = do
   o ← decodeJson b
   binderType ← o .: "binderType"
+  a ← o .: "annotation" >>= annFromJson modulePath
   case binderType of
     "NullBinder" → do
-      a ← o .: "annotation" >>= annFromJson modulePath
       pure $ NullBinder a
     "VarBinder" → do
-      a ← o .: "annotation" >>= annFromJson modulePath
       i ← o .: "identifier" >>= identFromJson
       pure $ VarBinder a i
     "LiteralBinder" → do
-      a ← o .: "annotation" >>= annFromJson modulePath
       l ← o .: "literal" >>= literalFromJson (binderFromJson modulePath)
       pure $ LiteralBinder a l
     "ConstructorBinder" → do
-      a ← o .: "annotation" >>= annFromJson modulePath
       t ← o .: "typeName" >>= qualifiedFromJson Proper
       c ← o .: "constructorName" >>= qualifiedFromJson Proper
       s ← o .: "binders" >>= traverse (binderFromJson modulePath)
       pure $ ConstructorBinder a t c s
     "NamedBinder" → do
-      a ← o .: "annotation" >>= annFromJson modulePath
       i ← o .: "identifier" >>= identFromJson
       s ← o .: "binder" >>= binderFromJson modulePath
       pure $ NamedBinder a i s

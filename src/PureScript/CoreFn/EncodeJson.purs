@@ -19,7 +19,7 @@ import Data.Tuple.Nested ((/\))
 import Data.String.CodeUnits as SCU
 import Data.String.Common (split)
 import Data.String.Pattern (Pattern(..))
-import Foreign.Object (fromHomogeneous, insert, singleton)
+import Foreign.Object (Object, fromHomogeneous, insert, singleton)
 import PureScript.CoreFn.Ann (Ann(..))
 import PureScript.CoreFn.Binder (Binder(..))
 import PureScript.CoreFn.Expr (Bind(..), CaseAlternative(..), Expr(..))
@@ -39,26 +39,26 @@ import PureScript.CoreFn.Types
   )
 
 constructorTypeToJson ∷ ConstructorType → Json
-constructorTypeToJson = case _ of
-  ProductType → fromString "ProductType"
-  SumType → fromString "SumType"
+constructorTypeToJson c = fromString $ case c of
+  ProductType → "ProductType"
+  SumType → "SumType"
 
 metaToJson ∷ Meta → Json
-metaToJson = case _ of
+metaToJson m = fromObject $ case m of
   IsConstructor c i →
-    fromObject $ fromHomogeneous
+    fromHomogeneous
       { metaType: fromString "IsConstructor"
       , constructorType: constructorTypeToJson c
       , identifiers: fromArray $ identToJson <$> i
       }
   IsNewtype →
-    fromObject $ singleton "metaType" (fromString "IsNewtype")
+    singleton "metaType" (fromString "IsNewtype")
   IsTypeClassConstructor →
-    fromObject $ singleton "metaType" (fromString "IsTypeClassConstructor")
+    singleton "metaType" (fromString "IsTypeClassConstructor")
   IsForeign →
-    fromObject $ singleton "metaType" (fromString "IsForeign")
+    singleton "metaType" (fromString "IsForeign")
   IsWhere →
-    fromObject $ singleton "metaType" (fromString "IsWhere")
+    singleton "metaType" (fromString "IsWhere")
 
 sourceSpanToJson ∷ SourceSpan → Json
 sourceSpanToJson { start, end } =
@@ -82,12 +82,12 @@ annToJson (Ann { sourceSpan, meta }) =
     }
 
 commentToJson ∷ Comment → Json
-commentToJson = case _ of
-  LineComment t → fromObject $ singleton "LineComment" (fromString t)
-  BlockComment t → fromObject $ singleton "BlockComment" (fromString t)
+commentToJson c = fromObject $ case c of
+  LineComment t → singleton "LineComment" (fromString t)
+  BlockComment t → singleton "BlockComment" (fromString t)
 
 literalToJson ∷ ∀ a. (a → Json) → Literal a → Json
-literalToJson f = case _ of
+literalToJson f l = fromObject $ case l of
   NumericLiteral (Left n) →
     mkLiteral "IntLiteral" (fromNumber <<< toNumber $ n)
   NumericLiteral (Right n) →
@@ -103,9 +103,9 @@ literalToJson f = case _ of
   ObjectLiteral o →
     mkLiteral "ObjectLiteral" (fromObject $ f <$> o)
   where
-  mkLiteral ∷ String → Json → Json
+  mkLiteral ∷ String → Json → Object Json
   mkLiteral literalType value =
-    fromObject $ fromHomogeneous
+    fromHomogeneous
       { literalType: fromString literalType
       , value
       }
@@ -127,16 +127,16 @@ moduleNameToJson (ModuleName n) =
   fromArray $ fromString <$> split (Pattern " ") n
 
 bindToJson ∷ Bind Ann → Json
-bindToJson = case _ of
+bindToJson b = fromObject $ case b of
   NonRec a i e →
-    fromObject $ fromHomogeneous
+    fromHomogeneous
       { bindType: fromString "NonRec"
       , annotation: annToJson a
       , identifier: identToJson i
       , expression: exprToJson e
       }
   Rec xs →
-    fromObject $ fromHomogeneous
+    fromHomogeneous
       { bindType: fromString "Rec"
       , binds: fromArray $ xs <#> \{ identifier, annotation, expression } →
           fromObject $ fromHomogeneous
@@ -147,21 +147,21 @@ bindToJson = case _ of
       }
 
 exprToJson ∷ Expr Ann → Json
-exprToJson = case _ of
+exprToJson v = fromObject $ case v of
   Var annotation value →
-    fromObject $ fromHomogeneous
+    fromHomogeneous
       { "type": fromString "Var"
       , annotation: annToJson annotation
       , value: qualifiedToJson (\(Ident n) → n) value
       }
   Literal annotation value →
-    fromObject $ fromHomogeneous
+    fromHomogeneous
       { "type": fromString "Literal"
       , annotation: annToJson annotation
       , value: literalToJson exprToJson value
       }
   Constructor annotation typeName constructorName fieldNames →
-    fromObject $ fromHomogeneous
+    fromHomogeneous
       { "type": fromString "Constructor"
       , annotation: annToJson annotation
       , typeName: properToJson typeName
@@ -169,42 +169,42 @@ exprToJson = case _ of
       , fieldNames: fromArray $ identToJson <$> fieldNames
       }
   Accessor annotation fieldName expression →
-    fromObject $ fromHomogeneous
+    fromHomogeneous
       { "type": fromString "Accessor"
       , annotation: annToJson annotation
       , fieldName: fromString fieldName
       , expression: exprToJson expression
       }
   ObjectUpdate annotation expression updates →
-    fromObject $ fromHomogeneous
+    fromHomogeneous
       { "type": fromString "ObjectUpdate"
       , annotation: annToJson annotation
       , expression: exprToJson expression
       , updates: fromObject $ exprToJson <$> updates
       }
   Abs annotation argument body →
-    fromObject $ fromHomogeneous
+    fromHomogeneous
       { "type": fromString "Abs"
       , annotation: annToJson annotation
       , argument: identToJson argument
       , body: exprToJson body
       }
   App annotation abstraction argument →
-    fromObject $ fromHomogeneous
+    fromHomogeneous
       { "type": fromString "Abs"
       , annotation: annToJson annotation
       , abstraction: exprToJson abstraction
       , argument: exprToJson argument
       }
   Case annotation caseExpressions caseAlternatives →
-    fromObject $ fromHomogeneous
+    fromHomogeneous
       { "type": fromString "Case"
       , annotation: annToJson annotation
       , caseExpressions: fromArray $ exprToJson <$> caseExpressions
       , caseAlternatives: fromArray $ caseAlternativeToJson <$> caseAlternatives
       }
   Let annotation binds expression →
-    fromObject $ fromHomogeneous
+    fromHomogeneous
       { "type": fromString "Case"
       , annotation: annToJson annotation
       , binds: fromArray $ bindToJson <$> binds
@@ -237,26 +237,26 @@ caseAlternativeToJson (CaseAlternative { binders, result }) =
       }
 
 binderToJson ∷ Binder Ann → Json
-binderToJson = case _ of
+binderToJson b = fromObject $ case b of
   VarBinder annotation identifier →
-    fromObject $ fromHomogeneous
+    fromHomogeneous
       { binderType: fromString "VarBinder"
       , annotation: annToJson annotation
       , identifier: identToJson identifier
       }
   NullBinder annotation →
-    fromObject $ fromHomogeneous
+    fromHomogeneous
       { binderType: fromString "NullBinder"
       , annotation: annToJson annotation
       }
   LiteralBinder annotation literal →
-    fromObject $ fromHomogeneous
+    fromHomogeneous
       { binderType: fromString "NullBinder"
       , annotation: annToJson annotation
       , literal: literalToJson binderToJson literal
       }
   ConstructorBinder annotation typeName constructorName binders →
-    fromObject $ fromHomogeneous
+    fromHomogeneous
       { binderType: fromString "ConstructorBinder"
       , annotation: annToJson annotation
       , typeName: qualifiedToJson (\(Proper n) → n) typeName
@@ -264,7 +264,7 @@ binderToJson = case _ of
       , binders: fromArray $ binderToJson <$> binders
       }
   NamedBinder annotation identifier binder →
-    fromObject $ fromHomogeneous
+    fromHomogeneous
       { binderType: fromString "NamedBinder"
       , annotation: annToJson annotation
       , identifier: identToJson identifier

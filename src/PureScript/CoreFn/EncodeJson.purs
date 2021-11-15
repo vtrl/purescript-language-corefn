@@ -2,6 +2,7 @@ module PureScript.CoreFn.EncodeJson where
 
 import Prelude
 
+import Data.Array as Array
 import Data.Argonaut.Core
   ( Json
   , fromArray
@@ -13,14 +14,15 @@ import Data.Argonaut.Core
   )
 import Data.Either (Either(..), isLeft)
 import Data.Int (toNumber)
-import Data.Map (toUnfoldable)
+import Data.Map (Map)
 import Data.Maybe (maybe)
-import Data.Tuple.Nested ((/\))
 import Data.String.CodeUnits as SCU
+import Data.FoldableWithIndex (foldrWithIndex)
 import Data.String.Common (split)
 import Data.String.Pattern (Pattern(..))
 import Data.Version.Haskell (Version, showVersion)
-import Foreign.Object (Object, fromHomogeneous, insert, singleton)
+import Foreign.Object (Object, fromHomogeneous, singleton)
+import Foreign.Object as Object
 import PureScript.CoreFn.Ann (Ann(..))
 import PureScript.CoreFn.Binder (Binder(..))
 import PureScript.CoreFn.Expr (Bind(..), CaseAlternative(..), Expr(..))
@@ -100,7 +102,7 @@ literalToJson f l = fromObject $ case l of
   ArrayLiteral a →
     mkLiteral "ArrayLiteral" (fromArray $ f <$> a)
   ObjectLiteral o →
-    mkLiteral "ObjectLiteral" (fromObject $ f <$> o)
+    mkLiteral "ObjectLiteral" (fromArray $ mkObject o)
   where
   mkLiteral ∷ String → Json → Object Json
   mkLiteral literalType value =
@@ -108,6 +110,9 @@ literalToJson f l = fromObject $ case l of
       { literalType: fromString literalType
       , value
       }
+
+  mkObject :: Object a -> Array Json
+  mkObject = foldrWithIndex (\k v -> Array.cons (fromArray [fromString k, f v])) []
 
 identToJson ∷ Ident → Json
 identToJson (Ident n) = fromString n
@@ -123,7 +128,7 @@ qualifiedToJson f (Qualified q) = fromObject $ fromHomogeneous
 
 moduleNameToJson ∷ ModuleName → Json
 moduleNameToJson (ModuleName n) =
-  fromArray $ fromString <$> split (Pattern " ") n
+  fromArray $ fromString <$> split (Pattern ".") n
 
 bindToJson ∷ Bind Ann → Json
 bindToJson b = fromObject $ case b of
@@ -190,7 +195,7 @@ exprToJson v = fromObject $ case v of
       }
   App annotation abstraction argument →
     fromHomogeneous
-      { "type": fromString "Abs"
+      { "type": fromString "App"
       , annotation: annToJson annotation
       , abstraction: exprToJson abstraction
       , argument: exprToJson argument
@@ -204,7 +209,7 @@ exprToJson v = fromObject $ case v of
       }
   Let annotation binds expression →
     fromHomogeneous
-      { "type": fromString "Case"
+      { "type": fromString "Let"
       , annotation: annToJson annotation
       , binds: fromArray $ bindToJson <$> binds
       , expression: exprToJson expression
@@ -230,7 +235,7 @@ caseAlternativeToJson (CaseAlternative { binders, result }) =
           }
       Right r → exprToJson r
   in
-    fromObject $ insert name value $ fromHomogeneous
+    fromObject $ Object.insert name value $ fromHomogeneous
       { binders: fromArray $ binderToJson <$> binders
       , isGuarded
       }
@@ -250,7 +255,7 @@ binderToJson b = fromObject $ case b of
       }
   LiteralBinder annotation literal →
     fromHomogeneous
-      { binderType: fromString "NullBinder"
+      { binderType: fromString "LiteralBinder"
       , annotation: annToJson annotation
       , literal: literalToJson binderToJson literal
       }
@@ -278,7 +283,7 @@ moduleToJson v (Module m) =
     , modulePath: fromString m.modulePath
     , imports: fromArray $ importToJson <$> m.imports
     , exports: fromArray $ identToJson <$> m.exports
-    , reExports: fromArray $ reExportsToJson m.reExports
+    , reExports: fromObject $ reExportsToJson m.reExports
     , "foreign": fromArray $ identToJson <$> m."foreign"
     , decls: fromArray $ bindToJson <$> m.decls
     , builtWith: fromString $ showVersion v
@@ -291,5 +296,7 @@ moduleToJson v (Module m) =
       , moduleName: moduleNameToJson moduleName
       }
 
-  reExportsToJson e = toUnfoldable e <#> \(ModuleName n /\ identifiers) ->
-    fromObject $ singleton n (fromArray $ identToJson <$> identifiers)
+  reExportsToJson :: Map ModuleName (Array Ident) -> Object Json
+  reExportsToJson = foldrWithIndex insert Object.empty
+    where
+    insert (ModuleName n) i = Object.insert n (fromArray $ identToJson <$> i)

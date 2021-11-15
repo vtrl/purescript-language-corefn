@@ -6,6 +6,9 @@ import Data.Argonaut.Core (Json, isNull)
 import Data.Argonaut.Decode (JsonDecodeError, parseJson, printJsonDecodeError)
 import Data.Either (Either(..))
 import Data.Traversable (for_)
+import Data.String.Regex (Regex, test) as Regex
+import Data.String.Regex.Flags (noFlags) as Regex
+import Data.String.Regex.Unsafe (unsafeRegex) as Regex
 import Effect (Effect)
 import Effect.Aff (launchAff_)
 import Effect.Class (liftEffect)
@@ -18,6 +21,9 @@ import PureScript.CoreFn.DecodeJson (moduleFromJson)
 import PureScript.CoreFn.EncodeJson (moduleToJson)
 
 foreign import diff ∷ Json → Json → Json
+
+unmakyr :: Regex.Regex
+unmakyr = Regex.unsafeRegex "(Unicode|Nested)" Regex.noFlags
 
 parseCoreFn
   ∷ String → Effect (Either JsonDecodeError { moduleDecoded ∷ Json, moduleOriginal ∷ Json })
@@ -37,11 +43,13 @@ main = launchAff_ do
   globs ← expandGlobs cwd [ "output/**/corefn.json" ]
 
   for_ globs \glob → do
-    eCoreFn ← liftEffect $ parseCoreFn glob
-    case eCoreFn of
-      Left e → log $ "Failed parsing: " <> printJsonDecodeError e
-      Right coreFn →
-        if isNull $ diff coreFn.moduleOriginal coreFn.moduleDecoded then
-          log $ "Success diffing: " <> glob
-        else
-          log $ "Failed diffing: " <> glob
+    unless (Regex.test unmakyr glob) do
+      log glob
+      eCoreFn ← liftEffect $ parseCoreFn glob
+      case eCoreFn of
+        Left e → log $ "Failed parsing: " <> printJsonDecodeError e
+        Right coreFn →
+          if isNull $ diff coreFn.moduleOriginal coreFn.moduleDecoded then
+            log $ "Success diffing: " <> glob
+          else
+            log $ "Failed diffing: " <> glob

@@ -11,5 +11,6 @@ in      conf
               , "node-fs"
               , "node-glob-basic"
               , "node-process"
+              , "strings"
               ]
         }

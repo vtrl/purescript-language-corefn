@@ -148,6 +148,12 @@ bindToJson = case _ of
 
 exprToJson ∷ Expr Ann → Json
 exprToJson = case _ of
+  Var annotation value →
+    fromObject $ fromHomogeneous
+      { "type": fromString "Var"
+      , annotation: annToJson annotation
+      , value: qualifiedToJson (\(Ident n) → n) value
+      }
   Literal annotation value →
     fromObject $ fromHomogeneous
       { "type": fromString "Literal"
@@ -189,12 +195,6 @@ exprToJson = case _ of
       , annotation: annToJson annotation
       , abstraction: exprToJson abstraction
       , argument: exprToJson argument
-      }
-  Var annotation value →
-    fromObject $ fromHomogeneous
-      { "type": fromString "Var"
-      , annotation: annToJson annotation
-      , value: qualifiedToJson (\(Ident n) → n) value
       }
   Case annotation caseExpressions caseAlternatives →
     fromObject $ fromHomogeneous
@@ -238,6 +238,12 @@ caseAlternativeToJson (CaseAlternative { binders, result }) =
 
 binderToJson ∷ Binder Ann → Json
 binderToJson = case _ of
+  VarBinder annotation identifier →
+    fromObject $ fromHomogeneous
+      { binderType: fromString "VarBinder"
+      , annotation: annToJson annotation
+      , identifier: identToJson identifier
+      }
   NullBinder annotation →
     fromObject $ fromHomogeneous
       { binderType: fromString "NullBinder"
@@ -248,12 +254,6 @@ binderToJson = case _ of
       { binderType: fromString "NullBinder"
       , annotation: annToJson annotation
       , literal: literalToJson binderToJson literal
-      }
-  VarBinder annotation identifier →
-    fromObject $ fromHomogeneous
-      { binderType: fromString "VarBinder"
-      , annotation: annToJson annotation
-      , identifier: identToJson identifier
       }
   ConstructorBinder annotation typeName constructorName binders →
     fromObject $ fromHomogeneous

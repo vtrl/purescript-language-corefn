@@ -2,10 +2,13 @@ module PureScript.CoreFn.Types where
 
 import Prelude
 
-import Data.Newtype (class Newtype)
+import Data.Array as Array
 import Data.Either (Either)
+import Data.Maybe (Maybe)
+import Data.Newtype (class Newtype)
+import Foreign.Object (Object)
 
-type SourcePos =
+newtype SourcePos = SourcePos
   { line ∷ Int
   , column ∷ Int
   }
@@ -16,16 +19,20 @@ type SourceSpan =
   , end ∷ SourcePos
   }
 
+data Comment
+  = LineComment String
+  | BlockComment String
+
 data Literal a
   = NumericLiteral (Either Int Number)
   | StringLiteral String
   | CharLiteral Char
   | BooleanLiteral Boolean
   | ArrayLiteral (Array a)
-  | ObjectLiteral (Array { key ∷ String, value ∷ a })
+  | ObjectLiteral (Object a)
 
 newtype Qualified a = Qualified
-  { module ∷ ModuleName
+  { module ∷ Maybe ModuleName
   , name ∷ a
   }
 
@@ -50,3 +57,16 @@ newtype Proper = Proper String
 derive instance Newtype Proper _
 derive newtype instance Eq Proper
 derive newtype instance Ord Proper
+
+newtype Version = Version
+  { branch ∷ Array Int
+  , tags ∷ Array String
+  }
+
+derive instance Newtype Version _
+derive newtype instance Eq Version
+derive newtype instance Ord Version
+
+showVersion ∷ Version → String
+showVersion (Version { branch, tags }) =
+  Array.intercalate "." (show <$> branch) <> "-" <> Array.intercalate "-" tags

@@ -1,6 +1,6 @@
 module PureScript.CoreFn.Binder where
 
-import PureScript.CoreFn.Types (Ident, Literal, Qualified, Proper)
+import PureScript.CoreFn.Types (Ident, Literal, Proper, Qualified)
 
 data Binder a
   = NullBinder a

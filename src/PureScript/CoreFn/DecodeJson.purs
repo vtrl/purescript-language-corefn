@@ -4,6 +4,7 @@ import Prelude
 
 import Data.Argonaut.Core (Json)
 import Data.Argonaut.Decode (JsonDecodeError(..), decodeJson, (.:), (.:?))
+import Data.Argonaut.Decode.Decoders (decodeString)
 import Data.Array as Array
 import Data.Bifunctor (lmap)
 import Data.Either (Either(..))
@@ -37,7 +38,7 @@ type FilePath = String
 
 constructorTypeFromJson ∷ Json → Either JsonDecodeError ConstructorType
 constructorTypeFromJson ctorType = do
-  o ← decodeJson ctorType
+  o ← decodeString ctorType
   case o of
     "ProductType" → pure ProductType
     "SumType" → pure SumType
@@ -140,10 +141,10 @@ literalFromJson f l = do
       pure $ Tuple k v
 
 identFromJson ∷ Json → Either JsonDecodeError Ident
-identFromJson i = coerce (decodeJson i ∷ _ _ String)
+identFromJson i = coerce (decodeString i)
 
 properFromJson ∷ Json → Either JsonDecodeError Proper
-properFromJson p = coerce (decodeJson p ∷ _ _ String)
+properFromJson p = coerce (decodeString p)
 
 moduleNameFromJson ∷ Json → Either JsonDecodeError ModuleName
 moduleNameFromJson m = ModuleName <<< Array.intercalate "." <$> decodeJson m

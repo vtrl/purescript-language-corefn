@@ -2,6 +2,7 @@
 , dependencies =
   [ "argonaut-core"
   , "arrays"
+  , "bifunctors"
   , "console"
   , "effect"
   , "either"

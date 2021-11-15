@@ -1,5 +1,7 @@
 module PureScript.CoreFn.Module where
 
+import Prelude
+
 import Data.Map (Map)
 import PureScript.CoreFn.Expr (Bind)
 import PureScript.CoreFn.Types (Comment, Ident, ModuleName, SourceSpan)
@@ -15,3 +17,5 @@ newtype Module a = Module
   , foreign ∷ Array Ident
   , decls ∷ Array (Bind a)
   }
+
+derive instance Functor Module

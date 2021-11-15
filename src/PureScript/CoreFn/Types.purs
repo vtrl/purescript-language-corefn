@@ -31,6 +31,8 @@ data Literal a
   | ArrayLiteral (Array a)
   | ObjectLiteral (Object a)
 
+derive instance Functor Literal
+
 newtype Qualified a = Qualified
   { module ∷ Maybe ModuleName
   , name ∷ a

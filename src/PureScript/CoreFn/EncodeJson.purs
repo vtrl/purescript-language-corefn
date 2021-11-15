@@ -2,7 +2,6 @@ module PureScript.CoreFn.EncodeJson where
 
 import Prelude
 
-import Data.Array as Array
 import Data.Argonaut.Core
   ( Json
   , fromArray
@@ -12,12 +11,13 @@ import Data.Argonaut.Core
   , fromString
   , jsonNull
   )
+import Data.Array as Array
 import Data.Either (Either(..), isLeft)
+import Data.FoldableWithIndex (foldrWithIndex)
 import Data.Int (toNumber)
 import Data.Map (Map)
 import Data.Maybe (maybe)
 import Data.String.CodeUnits as SCU
-import Data.FoldableWithIndex (foldrWithIndex)
 import Data.String.Common (split)
 import Data.String.Pattern (Pattern(..))
 import Data.Version.Haskell (Version, showVersion)
@@ -111,8 +111,8 @@ literalToJson f l = fromObject $ case l of
       , value
       }
 
-  mkObject :: Object a -> Array Json
-  mkObject = foldrWithIndex (\k v -> Array.cons (fromArray [fromString k, f v])) []
+  mkObject ∷ Object a → Array Json
+  mkObject = foldrWithIndex (\k v → Array.cons (fromArray [ fromString k, f v ])) []
 
 identToJson ∷ Ident → Json
 identToJson (Ident n) = fromString n
@@ -296,7 +296,7 @@ moduleToJson v (Module m) =
       , moduleName: moduleNameToJson moduleName
       }
 
-  reExportsToJson :: Map ModuleName (Array Ident) -> Object Json
+  reExportsToJson ∷ Map ModuleName (Array Ident) → Object Json
   reExportsToJson = foldrWithIndex insert Object.empty
     where
     insert (ModuleName n) i = Object.insert n (fromArray $ identToJson <$> i)

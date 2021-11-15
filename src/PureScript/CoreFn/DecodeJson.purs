@@ -7,13 +7,13 @@ import Data.Argonaut.Decode (JsonDecodeError(..), decodeJson, (.:), (.:?))
 import Data.Array as Array
 import Data.Bifunctor (lmap)
 import Data.Either (Either(..))
+import Data.FoldableWithIndex (foldrWithIndex)
 import Data.Map (Map)
 import Data.Map as Map
 import Data.Maybe (Maybe(..), maybe)
 import Data.String.Unsafe as String
 import Data.Traversable (traverse)
 import Data.Tuple (Tuple(..))
-import Data.FoldableWithIndex (foldrWithIndex)
 import Data.Version.Haskell (Version, parseVersion)
 import Foreign.Object (Object, fromFoldable)
 import PureScript.CoreFn.Ann (Ann(..))
@@ -124,20 +124,20 @@ literalFromJson f l = do
       ObjectLiteral <$> parseObjectLiteral v
     u →
       Left $ TypeMismatch $ "Unknown literal type: " <> u
-    where
-    getIndex a i =
-      maybe
-        (Left (AtIndex i MissingValue))
-        (lmap (AtIndex i) <<< decodeJson)
-        (Array.index a i)
+  where
+  getIndex a i =
+    maybe
+      (Left (AtIndex i MissingValue))
+      (lmap (AtIndex i) <<< decodeJson)
+      (Array.index a i)
 
-    parseObjectLiteral :: Array (Array Json) -> Either JsonDecodeError (Object a)
-    parseObjectLiteral = map fromFoldable <<< traverse parsePair
-      where
-      parsePair a = do
-        k <- getIndex a 0 >>= decodeJson
-        v <- getIndex a 1 >>= f
-        pure $ Tuple k v
+  parseObjectLiteral ∷ Array (Array Json) → Either JsonDecodeError (Object a)
+  parseObjectLiteral = map fromFoldable <<< traverse parsePair
+    where
+    parsePair a = do
+      k ← getIndex a 0 >>= decodeJson
+      v ← getIndex a 1 >>= f
+      pure $ Tuple k v
 
 identFromJson ∷ Json → Either JsonDecodeError Ident
 identFromJson i = coerce (decodeJson i ∷ _ _ String)
@@ -161,48 +161,48 @@ exprFromJson modulePath e = do
   exprType ← o .: "type"
   case exprType of
     "Var" → do
-      a <- o .: "annotation" >>= annFromJson modulePath
-      q <- o .: "value" >>= qualifiedFromJson Ident
+      a ← o .: "annotation" >>= annFromJson modulePath
+      q ← o .: "value" >>= qualifiedFromJson Ident
       pure $ Var a q
     "Literal" → do
-      a <- o .: "annotation" >>= annFromJson modulePath
-      l <- o .: "value" >>= literalFromJson (exprFromJson modulePath)
+      a ← o .: "annotation" >>= annFromJson modulePath
+      l ← o .: "value" >>= literalFromJson (exprFromJson modulePath)
       pure $ Literal a l
     "Constructor" → do
-      a <- o .: "annotation" >>= annFromJson modulePath
-      t <- o .: "typeName" >>= properFromJson
-      c <- o .: "constructorName" >>= properFromJson
-      i  <- o .: "fieldNames" >>= traverse identFromJson
+      a ← o .: "annotation" >>= annFromJson modulePath
+      t ← o .: "typeName" >>= properFromJson
+      c ← o .: "constructorName" >>= properFromJson
+      i ← o .: "fieldNames" >>= traverse identFromJson
       pure $ Constructor a t c i
     "Accessor" → do
-      a <- o .: "annotation" >>= annFromJson modulePath
-      f <- o .: "fieldName"
-      n <- o .: "expression" >>= exprFromJson modulePath
+      a ← o .: "annotation" >>= annFromJson modulePath
+      f ← o .: "fieldName"
+      n ← o .: "expression" >>= exprFromJson modulePath
       pure $ Accessor a f n
     "ObjectUpdate" → do
-      a <- o .: "annotation" >>= annFromJson modulePath
-      r <- o .: "expression" >>= exprFromJson modulePath
-      u <- o .: "updates" >>= traverse (exprFromJson modulePath)
+      a ← o .: "annotation" >>= annFromJson modulePath
+      r ← o .: "expression" >>= exprFromJson modulePath
+      u ← o .: "updates" >>= traverse (exprFromJson modulePath)
       pure $ ObjectUpdate a r u
     "Abs" → do
-      a <- o .: "annotation" >>= annFromJson modulePath
-      i <- o .: "argument" >>= identFromJson
-      b <- o .: "body" >>= exprFromJson modulePath
+      a ← o .: "annotation" >>= annFromJson modulePath
+      i ← o .: "argument" >>= identFromJson
+      b ← o .: "body" >>= exprFromJson modulePath
       pure $ Abs a i b
     "App" → do
-      a <- o .: "annotation" >>= annFromJson modulePath
-      f <- o .: "abstraction" >>= exprFromJson modulePath
-      x <- o .: "argument" >>= exprFromJson modulePath
+      a ← o .: "annotation" >>= annFromJson modulePath
+      f ← o .: "abstraction" >>= exprFromJson modulePath
+      x ← o .: "argument" >>= exprFromJson modulePath
       pure $ App a f x
     "Case" → do
-      a <- o .: "annotation" >>= annFromJson modulePath
-      c <- o .: "caseExpressions" >>= traverse (exprFromJson modulePath)
-      t <- o .: "caseAlternatives" >>= traverse (caseAlternativeFromJson modulePath)
+      a ← o .: "annotation" >>= annFromJson modulePath
+      c ← o .: "caseExpressions" >>= traverse (exprFromJson modulePath)
+      t ← o .: "caseAlternatives" >>= traverse (caseAlternativeFromJson modulePath)
       pure $ Case a c t
     "Let" → do
-      a <- o .: "annotation" >>= annFromJson modulePath
-      b <- o .: "binds" >>= traverse (bindFromJson modulePath)
-      r <- o .: "expression" >>= exprFromJson modulePath
+      a ← o .: "annotation" >>= annFromJson modulePath
+      b ← o .: "binds" >>= traverse (bindFromJson modulePath)
+      r ← o .: "expression" >>= exprFromJson modulePath
       pure $ Let a b r
     u →
       Left $ TypeMismatch $ "Unknown expression type: " <> u
@@ -308,11 +308,11 @@ moduleFromJson m = do
     moduleName ← o .: "moduleName" >>= moduleNameFromJson
     pure { annotation, moduleName }
 
-  reExportsFromJson :: Object (Array String) -> (Map ModuleName (Array Ident))
+  reExportsFromJson ∷ Object (Array String) → (Map ModuleName (Array Ident))
   reExportsFromJson = coerce go
     where
-    go :: Object (Array String) -> (Map ModuleName (Array String))
-    go = foldrWithIndex (\i -> Map.insert (ModuleName i)) Map.empty
+    go ∷ Object (Array String) → (Map ModuleName (Array String))
+    go = foldrWithIndex (\i → Map.insert (ModuleName i)) Map.empty
 
   commentFromJson c = do
     o ← decodeJson c

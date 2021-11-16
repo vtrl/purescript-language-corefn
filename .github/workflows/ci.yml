@@ -28,8 +28,5 @@ jobs:
       - name: Install Dependencies
         run: pnpm install
 
-      - name: Build Package
-        run: pnpm build
-
       - name: Test Package
         run: pnpm build-corefn && pnpm golden-package-set

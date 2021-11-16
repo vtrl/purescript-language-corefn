@@ -3,7 +3,7 @@ module PureScript.CoreFn.DecodeJson where
 import Prelude
 
 import Data.Argonaut.Core (Json)
-import Data.Argonaut.Decode (JsonDecodeError(..), decodeJson, (.:), (.:?))
+import Data.Argonaut.Decode (class DecodeJson, JsonDecodeError(..), decodeJson, (.:), (.:?))
 import Data.Argonaut.Decode.Decoders (decodeString)
 import Data.Array as Array
 import Data.Bifunctor (lmap)
@@ -92,12 +92,6 @@ sourceSpanFromJson modulePath sourceSpan = do
     column ← getIndex a 1
     pure $ SourcePos { line, column }
 
-  getIndex a i =
-    maybe
-      (Left (AtIndex i MissingValue))
-      (lmap (AtIndex i) <<< decodeJson)
-      (Array.index a i)
-
 literalFromJson
   ∷ ∀ a
   . (Json → Either JsonDecodeError a)
@@ -126,12 +120,6 @@ literalFromJson f l = do
     u →
       Left $ TypeMismatch $ "Unknown literal type: " <> u
   where
-  getIndex a i =
-    maybe
-      (Left (AtIndex i MissingValue))
-      (lmap (AtIndex i) <<< decodeJson)
-      (Array.index a i)
-
   parseObjectLiteral ∷ Array (Array Json) → Either JsonDecodeError (Object a)
   parseObjectLiteral = map fromFoldable <<< traverse parsePair
     where
@@ -311,3 +299,10 @@ moduleFromJson m = do
       Just l', Nothing → pure $ LineComment l'
       Nothing, Just b' → pure $ BlockComment b'
       _, _ → Left $ TypeMismatch "Invalid comment."
+
+getIndex ∷ ∀ a. DecodeJson a ⇒ Array Json → Int → Either JsonDecodeError a
+getIndex a i =
+  maybe
+    (Left (AtIndex i MissingValue))
+    (lmap (AtIndex i) <<< decodeJson)
+    (Array.index a i)

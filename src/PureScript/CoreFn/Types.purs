@@ -12,6 +12,8 @@ newtype SourcePos = SourcePos
   , column ∷ Int
   }
 
+derive instance Eq SourcePos
+
 type SourceSpan =
   { name ∷ String
   , start ∷ SourcePos
@@ -22,6 +24,8 @@ data Comment
   = LineComment String
   | BlockComment String
 
+derive instance Eq Comment
+
 data Literal a
   = NumericLiteral (Either Int Number)
   | StringLiteral String
@@ -30,6 +34,7 @@ data Literal a
   | ArrayLiteral (Array a)
   | ObjectLiteral (Object a)
 
+derive instance Eq a => Eq (Literal a)
 derive instance Functor Literal
 
 newtype Qualified a = Qualified

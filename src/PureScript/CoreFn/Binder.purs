@@ -11,4 +11,5 @@ data Binder a
   | ConstructorBinder a (Qualified Proper) (Qualified Proper) (Array (Binder a))
   | NamedBinder a Ident (Binder a)
 
+derive instance Eq a => Eq (Binder a)
 derive instance Functor Binder

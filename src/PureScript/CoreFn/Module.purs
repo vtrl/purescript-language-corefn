@@ -18,4 +18,5 @@ newtype Module a = Module
   , decls ∷ Array (Bind a)
   }
 
+derive instance Eq a => Eq (Module a)
 derive instance Functor Module

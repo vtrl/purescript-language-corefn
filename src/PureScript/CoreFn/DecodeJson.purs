@@ -112,11 +112,11 @@ literalFromJson f l = do
     "BooleanLiteral" →
       BooleanLiteral <$> o .: "value"
     "ArrayLiteral" → do
-      v ← o .: "value"
-      ArrayLiteral <$> traverse f v
+      v ← o .: "value" >>= traverse f
+      pure $ ArrayLiteral v
     "ObjectLiteral" → do
-      v ← o .: "value"
-      ObjectLiteral <$> parseObjectLiteral v
+      v ← o .: "value" >>= parseObjectLiteral
+      pure $ ObjectLiteral v
     u →
       Left $ TypeMismatch $ "Unknown literal type: " <> u
   where

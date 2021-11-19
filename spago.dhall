@@ -4,6 +4,7 @@
   , "argonaut-core"
   , "arrays"
   , "bifunctors"
+  , "control"
   , "either"
   , "foldable-traversable"
   , "foreign-object"

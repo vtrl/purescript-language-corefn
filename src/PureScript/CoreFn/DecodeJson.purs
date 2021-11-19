@@ -2,6 +2,7 @@ module PureScript.CoreFn.DecodeJson where
 
 import Prelude
 
+import Control.Alt ((<|>))
 import Data.Argonaut.Core (Json)
 import Data.Argonaut.Decode (class DecodeJson, JsonDecodeError(..), decodeJson, (.:), (.:?))
 import Data.Argonaut.Decode.Decoders (decodeString)
@@ -294,12 +295,9 @@ moduleFromJson m = do
 
   commentFromJson c = do
     o ← decodeJson c
-    (l ∷ _ String) ← o .:? "LineComment"
-    (b ∷ _ String) ← o .:? "BlockComment"
-    case l, b of
-      Just l', Nothing → pure $ LineComment l'
-      Nothing, Just b' → pure $ BlockComment b'
-      _, _ → Left $ TypeMismatch "Invalid comment."
+    (LineComment <$> o .: "LineComment")
+      <|> (BlockComment <$> o .: "BlockComment")
+      <|> (Left $ TypeMismatch "Unknown comment type.")
 
 getIndex ∷ ∀ a. DecodeJson a ⇒ Array Json → Int → Either JsonDecodeError a
 getIndex a i =

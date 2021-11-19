@@ -194,10 +194,11 @@ bindFromJson modulePath b = do
   bindType ← o .: "bindType"
   case bindType of
     "NonRec" → do
-      b_ ← bindFromJson_ o
-      pure $ NonRec b_.annotation b_.identifier b_.expression
+      { annotation, identifier, expression } ← bindFromJson_ o
+      pure $ NonRec annotation identifier expression
     "Rec" → do
-      Rec <$> (o .: "binds" >>= traverse bindFromJson_)
+      binds ← o .: "binds" >>= traverse bindFromJson_
+      pure $ Rec binds
     u →
       Left $ TypeMismatch $ "Unknown bind type: " <> u
   where

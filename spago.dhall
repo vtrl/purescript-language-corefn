@@ -1,4 +1,4 @@
-{ name = "language-purescript-corefn"
+{ name = "language-corefn"
 , dependencies =
   [ "argonaut-codecs"
   , "argonaut-core"

@@ -87,7 +87,7 @@ sourceSpanFromJson modulePath sourceSpan = do
     , end
     }
   where
-  sourcePosFromJson :: Json -> Either JsonDecodeError SourcePos
+  sourcePosFromJson ∷ Json → Either JsonDecodeError SourcePos
   sourcePosFromJson o = do
     a ← decodeJson o
     line ← getIndex a 0

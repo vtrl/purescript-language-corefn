@@ -32,7 +32,7 @@ data Literal a
   | ArrayLiteral (Array a)
   | ObjectLiteral (Object a)
 
-derive instance Eq a => Eq (Literal a)
+derive instance Eq a ⇒ Eq (Literal a)
 derive instance Functor Literal
 
 newtype Qualified a = Qualified

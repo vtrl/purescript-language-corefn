@@ -19,14 +19,14 @@ data Expr a
   | Case a (Array (Expr a)) (Array (CaseAlternative a))
   | Let a (Array (Bind a)) (Expr a)
 
-derive instance Eq a => Eq (Expr a)
+derive instance Eq a ⇒ Eq (Expr a)
 derive instance Functor Expr
 
 data Bind a
   = NonRec a Ident (Expr a)
   | Rec (Array { annotation ∷ a, identifier ∷ Ident, expression ∷ Expr a })
 
-derive instance Eq a => Eq (Bind a)
+derive instance Eq a ⇒ Eq (Bind a)
 derive instance Functor Bind
 
 type Guard = Expr
@@ -36,7 +36,7 @@ newtype CaseAlternative a = CaseAlternative
   , result ∷ Either (Array { guard ∷ Guard a, expression ∷ Expr a }) (Expr a)
   }
 
-derive instance Eq a => Eq (CaseAlternative a)
+derive instance Eq a ⇒ Eq (CaseAlternative a)
 
 instance Functor CaseAlternative where
   map f (CaseAlternative { binders, result }) =

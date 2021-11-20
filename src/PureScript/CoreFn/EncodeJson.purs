@@ -35,7 +35,7 @@ import PureScript.CoreFn.Types
   , ModuleName(..)
   , Proper(..)
   , Qualified(..)
-  , SourcePos(..)
+  , SourcePos
   , SourceSpan
   )
 
@@ -69,7 +69,7 @@ sourceSpanToJson { start, end } =
     }
   where
   sourcePosToJson ∷ SourcePos → Json
-  sourcePosToJson (SourcePos { line, column }) =
+  sourcePosToJson { line, column } =
     fromArray
       [ fromNumber <<< toNumber $ line
       , fromNumber <<< toNumber $ column

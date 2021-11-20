@@ -30,7 +30,7 @@ import PureScript.CoreFn.Types
   , ModuleName(..)
   , Proper(..)
   , Qualified(..)
-  , SourcePos(..)
+  , SourcePos
   , SourceSpan
   )
 import Safe.Coerce (coerce)
@@ -87,11 +87,12 @@ sourceSpanFromJson modulePath sourceSpan = do
     , end
     }
   where
+  sourcePosFromJson :: Json -> Either JsonDecodeError SourcePos
   sourcePosFromJson o = do
     a ← decodeJson o
     line ← getIndex a 0
     column ← getIndex a 1
-    pure $ SourcePos { line, column }
+    pure { line, column }
 
 literalFromJson
   ∷ ∀ a

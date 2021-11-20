@@ -7,12 +7,10 @@ import Data.Maybe (Maybe)
 import Data.Newtype (class Newtype)
 import Foreign.Object (Object)
 
-newtype SourcePos = SourcePos
+type SourcePos =
   { line ∷ Int
   , column ∷ Int
   }
-
-derive instance Eq SourcePos
 
 type SourceSpan =
   { name ∷ String

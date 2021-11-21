@@ -9,6 +9,7 @@
   , "foldable-traversable"
   , "foreign-object"
   , "integers"
+  , "language-common"
   , "maybe"
   , "newtype"
   , "ordered-collections"

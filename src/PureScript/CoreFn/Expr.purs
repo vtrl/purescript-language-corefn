@@ -5,8 +5,9 @@ import Prelude
 import Data.Bifunctor (bimap)
 import Data.Either (Either)
 import Foreign.Object (Object)
+import PureScript.Common.Names (Ident, Proper, Qualified)
 import PureScript.CoreFn.Binder (Binder)
-import PureScript.CoreFn.Types (Ident, Literal, Proper, Qualified)
+import PureScript.CoreFn.Types (Literal)
 
 data Expr a
   = Literal a (Literal (Expr a))

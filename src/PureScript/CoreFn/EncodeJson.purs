@@ -23,6 +23,16 @@ import Data.String.Pattern (Pattern(..))
 import Data.Version.Haskell (Version, showVersion)
 import Foreign.Object (Object, fromHomogeneous, singleton)
 import Foreign.Object as Object
+import PureScript.Common.Names
+  ( Ident(..)
+  , ModuleName(..)
+  , Proper(..)
+  , Qualified(..)
+  )
+import PureScript.Common.Position
+  ( SourcePos
+  , SourceSpan
+  )
 import PureScript.CoreFn.Ann (Ann(..))
 import PureScript.CoreFn.Binder (Binder(..))
 import PureScript.CoreFn.Expr (Bind(..), CaseAlternative(..), Expr(..))
@@ -30,13 +40,7 @@ import PureScript.CoreFn.Meta (ConstructorType(..), Meta(..))
 import PureScript.CoreFn.Module (Module(..))
 import PureScript.CoreFn.Types
   ( Comment(..)
-  , Ident(..)
   , Literal(..)
-  , ModuleName(..)
-  , Proper(..)
-  , Qualified(..)
-  , SourcePos
-  , SourceSpan
   )
 
 constructorTypeToJson ∷ ConstructorType → Json

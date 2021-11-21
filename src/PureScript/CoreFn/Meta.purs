@@ -1,7 +1,7 @@
 module PureScript.CoreFn.Meta where
 
 import Data.Eq (class Eq)
-import PureScript.CoreFn.Types (Ident)
+import PureScript.Common.Names (Ident)
 
 data Meta
   = IsConstructor ConstructorType (Array Ident)

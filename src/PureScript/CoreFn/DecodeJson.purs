@@ -18,6 +18,16 @@ import Data.Traversable (traverse)
 import Data.Tuple (Tuple(..))
 import Data.Version.Haskell (Version, parseVersion)
 import Foreign.Object (Object, fromFoldable)
+import PureScript.Common.Names
+  ( Ident(..)
+  , ModuleName(..)
+  , Proper(..)
+  , Qualified(..)
+  )
+import PureScript.Common.Position
+  ( SourcePos
+  , SourceSpan
+  )
 import PureScript.CoreFn.Ann (Ann(..))
 import PureScript.CoreFn.Binder (Binder(..))
 import PureScript.CoreFn.Expr (Bind(..), CaseAlternative(..), Expr(..))
@@ -25,13 +35,7 @@ import PureScript.CoreFn.Meta (ConstructorType(..), Meta(..))
 import PureScript.CoreFn.Module (Module(..))
 import PureScript.CoreFn.Types
   ( Comment(..)
-  , Ident(..)
   , Literal(..)
-  , ModuleName(..)
-  , Proper(..)
-  , Qualified(..)
-  , SourcePos
-  , SourceSpan
   )
 import Safe.Coerce (coerce)
 

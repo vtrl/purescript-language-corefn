@@ -3,8 +3,10 @@ module PureScript.CoreFn.Module where
 import Prelude
 
 import Data.Map (Map)
+import PureScript.Common.Names (Ident, ModuleName)
+import PureScript.Common.Position (SourceSpan)
 import PureScript.CoreFn.Expr (Bind)
-import PureScript.CoreFn.Types (Comment, Ident, ModuleName, SourceSpan)
+import PureScript.CoreFn.Types (Comment)
 
 newtype Module a = Module
   { sourceSpan ∷ SourceSpan

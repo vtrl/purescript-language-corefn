@@ -11,7 +11,6 @@
   , "integers"
   , "language-common"
   , "maybe"
-  , "newtype"
   , "ordered-collections"
   , "prelude"
   , "psci-support"

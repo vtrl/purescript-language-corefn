@@ -1,6 +1,7 @@
 {
     "dependencies":{"json-diff":"^0.5.4"},
     "scripts": {
+	"mono": "spago -x mono.dhall",
         "build": "spago build",
         "build-corefn": "spago build -u '-g corefn'",
         "golden-package-set": "spago -x golden-package-set/golden-package-set.dhall run"

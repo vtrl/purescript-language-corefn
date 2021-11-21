@@ -24,7 +24,7 @@ let additions =
       , language-common =
         { dependencies = [ "console", "effect", "maybe", "newtype", "prelude" ]
         , repo = "https://github.com/vtrl/purescript-language-common.git"
-        , version = "0bb2a7be138ad376f209b964a862891fd012dcc6"
+        , version = "main"
         }
       }
 
